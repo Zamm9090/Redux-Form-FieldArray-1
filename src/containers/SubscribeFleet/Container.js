@@ -14,20 +14,17 @@ class FieldArraysForm extends Component {
         selected: PropTypes.arrayOf(PropTypes.object)
       })
     }),
-    onSelectionChange: PropTypes.func
+    onSelectionChange: PropTypes.func,
+    onSubmit: PropTypes.func
   };
   state = {
     selectedMembers: []
   };
 
-  onSubmit = values => {
-    console.log("Selected Form Values ", values);
-  };
-
   render() {
     const { handleSubmit } = this.props;
     return (
-      <form onSubmit={handleSubmit(this.onSubmit)}>
+      <form onSubmit={handleSubmit(this.props.onSubmit)}>
         <SubscribeFleetProvider>
           <FieldArray name="selected" component={FleetFieldArray} />
         </SubscribeFleetProvider>
