@@ -52,10 +52,11 @@ class FieldArraysForm extends Component {
   };
 
   addNewRow = () => {
-    console.log("~~~~~~~ >>> addNewRow <<< ~~~~~~~");
     const { selected, selectAll } = this.state;
+    console.log("~~~~~~~ >>> addNewRow <<< ~~~~~~~ ", selected);
     selected.push({ selected: selectAll });
     this.props.updateFleetFormStore(selected);
+    this.props.updateSelectAll(selectAll);
   };
 
   removeNewRow = () => {
@@ -81,6 +82,7 @@ class FieldArraysForm extends Component {
 
   render() {
     const { handleSubmit } = this.props;
+    const { selected } = this.state;
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
         <div className="card">
@@ -91,8 +93,8 @@ class FieldArraysForm extends Component {
           </div>
           <div className="card-body">
             <div className="d-flex flex-column" style={{ overflowX: "auto" }}>
-              <div className="d-flex">
-                <div className="p-2 flex-fill">
+              <div style={{ display: "flex" }}>
+                <div style={{ flex: 1, order: 1, width: "10%" }}>
                   <Field
                     name="selectAll"
                     type="checkbox"
@@ -101,12 +103,30 @@ class FieldArraysForm extends Component {
                     value={this.state.selectAll}
                   />
                 </div>
-                <div className="p-2 flex-fill">FirstName</div>
-                <div className="p-2 flex-fill">LastName</div>
+                <div style={{ order: 2, width: "45%" }}>FirstName</div>
+                <div style={{ order: 3, width: "45%" }}>LastName</div>
               </div>
               <SubscribeFleetProvider>
                 <FieldArray name="selected" component={FleetFieldArray} />
               </SubscribeFleetProvider>
+              {selected.length > 0 ? (
+                <div />
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div
+                    style={{ borderTop: "1px solid gray", marginTop: "0.5rem" }}
+                  />
+                  <h6
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-around",
+                      marginTop: "0.5rem"
+                    }}
+                  >
+                    No Data Found
+                  </h6>
+                </div>
+              )}
             </div>
           </div>
           <div className="card-footer">
@@ -163,10 +183,11 @@ function mapDispatchToProps(dispatch, ownProps) {
       console.log("Selected Form Values ", values);
     },
     updateSelectAll(val) {
+      console.log("~~~~~~~ >>> updateSelectAll ", val);
       dispatch(change("fleetForm", "selectAll", val));
     },
     updateFleetFormStore(dataSet) {
-      console.log("~~~~~~~ >>> addNewRow ", dataSet);
+      console.log("~~~~~~~ >>> updateFleetFormStore ", dataSet);
       dispatch(change("fleetForm", "selected", dataSet));
     }
   };

@@ -10,22 +10,22 @@ class FleetFieldArray extends Component {
     return (
       <div>
         {fields.map((member, index) => (
-          <div className="d-flex" key={index}>
-            <div className="p-2 flex-fill">
+          <div style={{ display: "flex", marginTop: "1rem" }} key={index}>
+            <div style={{ flex: 1, order: 1, width: "10%" }}>
               <Field
                 name={`${member}.selected`}
                 type="checkbox"
                 component="input"
               />
             </div>
-            <div className="p-2 flex-fill">
+            <div style={{ order: 2, width: "45%" }}>
               <Field
                 name={`${member}.firstName`}
                 type="text"
                 component="input"
               />
             </div>
-            <div className="p-2 flex-fill">
+            <div style={{ order: 2, width: "45%" }}>
               <Field
                 name={`${member}.lastName`}
                 type="text"
