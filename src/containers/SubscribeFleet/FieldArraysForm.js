@@ -29,7 +29,8 @@ class FieldArraysForm extends Component {
 
   state = {
     selectAll: false,
-    selected: []
+    selected: [],
+    errors: []
   };
 
   componentWillReceiveProps(nextProps, prevProps) {
@@ -48,7 +49,12 @@ class FieldArraysForm extends Component {
     console.log("~~~~~~~ >>> Form Submit <<< ~~~~~~~ ", this.props);
     console.log("~~~~~~~ >>> Selected Form Values ", values);
     console.log("~~~~~~~ >>> mapStateToProps ", this.state);
-    this.props.onSubmit();
+    let error = this.props.validate(this.state);
+    console.log("~~~~~~~~~>>> Validate error ", error);
+    if (error.length === 0) {
+      this.props.onSubmit();
+    }
+    this.setState({ errors: error });
   };
 
   addNewRow = () => {
@@ -82,9 +88,19 @@ class FieldArraysForm extends Component {
 
   render() {
     const { handleSubmit } = this.props;
-    const { selected } = this.state;
+    const { selected, errors } = this.state;
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
+        <div className="d-flex flex-column text-danger">
+          {errors.map((item, index) => {
+            return (
+              <div key={index} style={{ display: "flex", flexWrap: "wrap" }}>
+                <div>{item.id}) </div>
+                <div>{item.i18nMessages.join(",")}</div>
+              </div>
+            );
+          })}
+        </div>
         <div className="card">
           <div className="card-header">
             <div className="d-flex justify-content-between">
@@ -155,8 +171,38 @@ class FieldArraysForm extends Component {
     );
   }
 }
+
+const validate = values => {
+  let error = [];
+  console.log("~~~~~~~~~~~ >>> Start validate ", values);
+  _.forEach(values.selected, (item, index) => {
+    let row = { i18nMessages: [] };
+    _.forEach(["firstName", "lastName"], entity => {
+      if (!item[entity]) {
+        switch (entity) {
+          case "firstName":
+            row.i18nMessages.push("First Name is Required");
+            break;
+          case "lastName":
+            row.i18nMessages.push("Last Name is Required");
+            break;
+          default:
+            break;
+        }
+        row.id = index;
+      }
+    });
+    if (row.id) {
+      error.push(row);
+    }
+  });
+  console.log("~~~~~~~~~~~ >>> End validate ", error);
+  return error;
+};
+
 FieldArraysForm = reduxForm({
-  form: "fleetForm"
+  form: "fleetForm",
+  validate
 })(FieldArraysForm);
 
 const selector = formValueSelector("fleetForm");
