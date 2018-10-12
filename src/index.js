@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import store from "./store";
 import SubscribeFleetContainer from "./containers/SubscribeFleet/Container";
+import "bootstrap/dist/css/bootstrap.css";
 
 const rootEl = document.getElementById("root");
 
