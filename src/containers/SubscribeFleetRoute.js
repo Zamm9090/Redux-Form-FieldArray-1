@@ -22,6 +22,9 @@ function mapDispatchToProps(dispatch, ownProps) {
   return {
     onSubmit(values) {
       console.log("Selected Form Values ", values);
+    },
+    addNewRow() {
+      console.log("~~~~~~~ >>> addNewRow ", this.state);
     }
   };
 }
