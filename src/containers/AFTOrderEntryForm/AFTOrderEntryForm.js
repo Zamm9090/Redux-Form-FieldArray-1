@@ -15,6 +15,7 @@ import AFTOrderEntryFormRow from "./AFTOrderEntryFormRow";
 class AFTOrderEntryForm extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func,
+    meta: PropTypes.object,
     title: PropTypes.string,
     getAllAccounts: PropTypes.func,
     onSubmit: PropTypes.func
@@ -55,13 +56,6 @@ class AFTOrderEntryForm extends Component {
   };
 
   onSelectAllFieldChange = (event, newValue, previousValue, name) => {
-    console.log(
-      "~~~~~~~~~~ >>> onSelectAllFieldChange ",
-      event,
-      newValue,
-      previousValue,
-      name
-    );
     const { orderEntries } = this.state;
     _.forEach(orderEntries, item => {
       item.selected = newValue;
@@ -72,7 +66,6 @@ class AFTOrderEntryForm extends Component {
   addNewOrderEntry = () => {
     const { orderEntries, selectAll } = this.state;
     orderEntries.push({ selected: selectAll });
-    console.log("~~~~~~~~~~~ addNewOrderEntry >> ", orderEntries);
     this.props.updateOrderEntriesState("orderEntries", orderEntries);
   };
 
@@ -88,13 +81,16 @@ class AFTOrderEntryForm extends Component {
   };
 
   onSubmit = values => {
-    console.log("~~~~~~~~~~ >>> AFTOrderEntryForm <:::> onSubmit ", values);
     this.props.onSubmit(values);
   };
   render() {
-    const { handleSubmit, title } = this.props;
+    const { handleSubmit, title, meta } = this.props;
+    console.log("~~~~~~~~~~~~ >>> Meta this.props.meta ", meta);
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
+        <div className="container">
+          <div className="row">Errors</div>
+        </div>
         <div className="card">
           <div className="card-header">
             <div className="card-title">{title}</div>
@@ -157,8 +153,33 @@ class AFTOrderEntryForm extends Component {
   }
 }
 
+const validate = values => {
+  const errors = {};
+  console.log("Start::::~~~~~~~~~~~~ >>> validate <===> values ", values);
+  if (!values.orderEntries || !values.orderEntries.length) {
+    errors.orderEntries = { _error: "At least one order must be selected" };
+  } else {
+    const membersArrayErrors = [];
+    errors.orderEntries = { _error: undefined };
+    values.orderEntries.forEach((member, memberIndex) => {
+      const memberErrors = {};
+      if (!member.accounts) {
+        memberErrors.accounts = "Required";
+        membersArrayErrors[memberIndex] = memberErrors;
+      }
+    });
+
+    if (membersArrayErrors.length) {
+      errors.orderEntries = membersArrayErrors;
+    }
+  }
+  console.log("End::::~~~~~~~~~~~~ >>> validate <===> errors ", errors);
+  return errors;
+};
+
 AFTOrderEntryForm = reduxForm({
-  form: "AFTOrderEntry"
+  form: "AFTOrderEntry",
+  validate
 })(AFTOrderEntryForm);
 
 const formAFTOrderEntry = formValueSelector("AFTOrderEntry");
@@ -187,11 +208,11 @@ function mapDispatchToProps(dispatch, ownProps) {
     },
     getAllAccounts() {
       let accounts = [];
-      accounts.push({ id: 32214782, displayName: "Sunitha Account" });
-      accounts.push({ id: 32214783, displayName: "Deepthi Account" });
-      accounts.push({ id: 32214784, displayName: "Radhika Account" });
-      accounts.push({ id: 32214783, displayName: "Preetha Account" });
-      accounts.push({ id: 32214784, displayName: "Sumanaa Account" });
+      accounts.push({ id: 32214782, displayName: "Account 1" });
+      accounts.push({ id: 32214783, displayName: "Account 2" });
+      accounts.push({ id: 32214784, displayName: "Account 3" });
+      accounts.push({ id: 32214785, displayName: "Account 4" });
+      accounts.push({ id: 32214786, displayName: "Account 5" });
       return accounts;
     }
   };
