@@ -30,7 +30,8 @@ class FieldArraysForm extends Component {
   state = {
     selectAll: false,
     selected: [],
-    errors: []
+    errors: [],
+    showNoDataFound: true
   };
 
   componentWillReceiveProps(nextProps, prevProps) {
@@ -61,6 +62,9 @@ class FieldArraysForm extends Component {
     const { selected, selectAll } = this.state;
     console.log("~~~~~~~ >>> addNewRow <<< ~~~~~~~ ", selected);
     selected.push({ selected: selectAll });
+    if (selected.length === 0) {
+      this.setState({ showNoDataFound: true });
+    }
     this.props.updateFleetFormStore(selected);
     this.props.updateSelectAll(selectAll);
   };
@@ -73,6 +77,7 @@ class FieldArraysForm extends Component {
     this.props.updateFleetFormStore(selected);
     if (selected.length === 0) {
       this.props.updateSelectAll(false);
+      this.setState({ showNoDataFound: true });
     }
   };
 
@@ -122,11 +127,12 @@ class FieldArraysForm extends Component {
                 <div style={{ order: 2, width: "45%" }}>FirstName</div>
                 <div style={{ order: 3, width: "45%" }}>LastName</div>
               </div>
-              <SubscribeFleetProvider>
-                <FieldArray name="selected" component={FleetFieldArray} />
-              </SubscribeFleetProvider>
-              {selected.length > 0 ? (
-                <div />
+              {selected.length > 0 && this.state.showNoDataFound ? (
+                <div>
+                  <SubscribeFleetProvider>
+                    <FieldArray name="selected" component={FleetFieldArray} />
+                  </SubscribeFleetProvider>
+                </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div
