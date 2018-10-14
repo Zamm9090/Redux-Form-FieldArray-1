@@ -24,6 +24,7 @@ class AFTOrderEntryForm extends Component {
   state = {
     orderEntries: [],
     selectAll: false,
+    noOfSelectedOrders: 0,
     options: {
       accounts: []
     }
@@ -36,23 +37,20 @@ class AFTOrderEntryForm extends Component {
   }
 
   componentWillReceiveProps(nextProps, prevProps) {
-    console.log(
-      "~~~~~~~~~~>>> componentWillReceiveProps ",
-      nextProps,
-      prevProps
-    );
     this.setState({
       orderEntries: nextProps.orderEntries,
       selectAll: nextProps.selectAll
     });
+    this.getSelectedOrdersCount(nextProps.orderEntries);
   }
 
-  getSelectedOrdersCount = () => {
-    const { orderEntries } = this.state;
+  getSelectedOrdersCount = orderEntries => {
     const selectedOrders = _.filter(orderEntries, o => {
       return o.selected;
     });
-    return selectedOrders.length;
+    this.setState({
+      noOfSelectedOrders: selectedOrders.length
+    });
   };
 
   onSelectAllFieldChange = (event, newValue, previousValue, name) => {
@@ -61,12 +59,14 @@ class AFTOrderEntryForm extends Component {
       item.selected = newValue;
     });
     this.props.updateOrderEntriesState("orderEntries", orderEntries);
+    this.getSelectedOrdersCount(this.state.orderEntries);
   };
 
   addNewOrderEntry = () => {
     const { orderEntries, selectAll } = this.state;
     orderEntries.push({ selected: selectAll });
     this.props.updateOrderEntriesState("orderEntries", orderEntries);
+    this.getSelectedOrdersCount(this.state.orderEntries);
   };
 
   removeSelectedOrderEntry = () => {
@@ -75,9 +75,8 @@ class AFTOrderEntryForm extends Component {
       return item.selected;
     });
     this.props.updateOrderEntriesState("orderEntries", orderEntries);
-    if (orderEntries.length === 0) {
-      this.props.updateOrderEntriesState("selectAll", false);
-    }
+    this.props.updateOrderEntriesState("selectAll", false);
+    this.getSelectedOrdersCount(this.state.orderEntries);
   };
 
   onSubmit = values => {
@@ -127,8 +126,8 @@ class AFTOrderEntryForm extends Component {
             >
               <button className="btn btn-primary mr-2" type="submit">
                 Enter Selected Orders{" "}
-                {this.getSelectedOrdersCount() > 0
-                  ? this.getSelectedOrdersCount()
+                {this.state.noOfSelectedOrders > 0
+                  ? this.state.noOfSelectedOrders
                   : ""}
               </button>
               <button
